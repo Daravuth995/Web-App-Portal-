@@ -1,583 +1,798 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>EduHub — Academic Learning Portal</title>
-  <meta name="theme-color" content="#0f172a">
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500;600&family=Koulen&display=swap" rel="stylesheet">
+  <meta name="theme-color" content="#0a0f1e">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800;900&family=Koulen&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.js"></script>
   <style>
     :root {
-      --ink: #0f172a; --ink-2: #1e293b; --ink-3: #334155; --ink-4: #475569;
-      --mist: #94a3b8; --white: #ffffff;
-      --royal: #2563eb; --royal-soft: #3b82f6; --royal-pale: rgba(37,99,235,.12);
-      --violet: #7c3aed; --violet-soft: #8b5cf6; --violet-pale: rgba(124,58,237,.12);
-      --teal: #0d9488; --teal-pale: rgba(13,148,136,.12);
-      --amber: #d97706; --amber-pale: rgba(217,119,6,.12);
-      --rose: #e11d48; --rose-pale: rgba(225,29,72,.12);
-      --emerald: #059669; --emerald-pale: rgba(5,150,105,.12);
-      --grad-primary: linear-gradient(135deg,#2563eb 0%,#7c3aed 100%);
-      --grad-teal:    linear-gradient(135deg,#0d9488 0%,#2563eb 100%);
-      --glass-bg: rgba(255,255,255,0.04); --glass-border: rgba(255,255,255,0.09);
-      --r-sm:10px; --r-md:16px; --r-lg:24px; --r-full:9999px;
-      --sidebar-w:260px; --header-h:64px;
-      --ease-out:cubic-bezier(.22,.68,0,1.2);
-      --ease-smooth:cubic-bezier(.25,.8,.25,1);
-      --font-display:'Syne',sans-serif; --font-body:'DM Sans',sans-serif;
+      --ink: #0a0f1e;
+      --ink-2: #111827;
+      --glass: rgba(255,255,255,0.04);
+      --glass-border: rgba(255,255,255,0.08);
+      --sidebar-w: 256px;
+      /* Pellet palette */
+      --pellet-blue: #3b7ef8;
+      --pellet-violet: #8b5cf6;
+      --pellet-teal: #14b8a6;
+      --pellet-amber: #f59e0b;
+      --pellet-rose: #f43f5e;
+      --pellet-emerald: #10b981;
+      --pellet-coral: #fb7185;
+      --pellet-indigo: #6366f1;
+      --ease-spring: cubic-bezier(.34,1.56,.64,1);
+      --ease-smooth: cubic-bezier(.25,.8,.25,1);
+      --font-display: 'Outfit', sans-serif;
+      --font-body: 'Plus Jakarta Sans', sans-serif;
     }
-    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-    html{scroll-behavior:smooth}
-    body{font-family:var(--font-body);background:var(--ink);color:var(--white);
-      min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased}
-    a{text-decoration:none;color:inherit}
-    button{border:none;cursor:pointer;font-family:var(--font-body)}
-
-    /* BG */
-    .bg-canvas{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none}
-    .bg-canvas::before{content:'';position:absolute;inset:-50%;
-      background:
-        radial-gradient(ellipse 60% 40% at 20% 20%,rgba(37,99,235,.18) 0%,transparent 60%),
-        radial-gradient(ellipse 50% 40% at 80% 80%,rgba(124,58,237,.15) 0%,transparent 60%),
-        radial-gradient(ellipse 40% 30% at 50% 50%,rgba(13,148,136,.08) 0%,transparent 60%);
-      animation:bgDrift 20s ease-in-out infinite alternate}
-    .bg-canvas::after{content:'';position:absolute;inset:0;
-      background-image:
-        linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),
-        linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);
-      background-size:48px 48px}
-    @keyframes bgDrift{0%{transform:translate(0,0) scale(1)}100%{transform:translate(2%,3%) scale(1.05)}}
-
-    /* SCROLL BAR */
-    .scroll-progress{position:fixed;top:0;left:0;height:3px;width:0;
-      background:var(--grad-primary);z-index:9999;
-      box-shadow:0 0 12px rgba(37,99,235,.6);transition:width .1s linear}
-
-    /* SHELL */
-    .app-shell{position:relative;z-index:1;display:flex;min-height:100vh}
-
-    /* SIDEBAR */
-    .sidebar{width:var(--sidebar-w);background:rgba(15,23,42,.94);backdrop-filter:blur(24px);
-      border-right:1px solid var(--glass-border);display:flex;flex-direction:column;
-      position:fixed;top:0;left:0;bottom:0;z-index:200;
-      transition:transform .35s var(--ease-smooth);overflow-y:auto;scrollbar-width:none}
-    .sidebar::-webkit-scrollbar{display:none}
-    .sidebar-logo{padding:24px 20px 20px;border-bottom:1px solid var(--glass-border);
-      display:flex;align-items:center;gap:12px}
-    .logo-icon{width:40px;height:40px;border-radius:var(--r-sm);background:var(--grad-primary);
-      display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;
-      box-shadow:0 4px 16px rgba(37,99,235,.4)}
-    .logo-text{line-height:1.2}
-    .logo-text strong{font-family:var(--font-display);font-size:1.1rem;letter-spacing:-.3px}
-    .logo-text small{font-size:.7rem;color:var(--mist);display:block}
-    .sidebar-section{padding:16px 12px 8px}
-    .sidebar-section-label{font-size:.65rem;font-weight:600;letter-spacing:.12em;
-      text-transform:uppercase;color:var(--ink-4);padding:0 8px;margin-bottom:6px}
-    .nav-item{display:flex;align-items:center;gap:12px;padding:10px 12px;
-      border-radius:var(--r-sm);color:var(--mist);font-size:.875rem;font-weight:500;
-      cursor:pointer;transition:all .2s ease;position:relative}
-    .nav-item:hover{background:var(--glass-bg);color:var(--white)}
-    .nav-item.active{background:var(--royal-pale);color:var(--royal-soft)}
-    .nav-item.active::before{content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);
-      width:3px;height:60%;border-radius:0 2px 2px 0;background:var(--royal-soft)}
-    .nav-item i{width:18px;text-align:center;font-size:.9rem}
-    .nav-badge{margin-left:auto;background:var(--rose);color:white;
-      font-size:.65rem;font-weight:700;padding:2px 7px;border-radius:var(--r-full)}
-    .sidebar-footer{margin-top:auto;padding:16px 12px;border-top:1px solid var(--glass-border)}
-    .instructor-chip{display:flex;align-items:center;gap:10px;padding:10px 12px;
-      border-radius:var(--r-sm);background:var(--glass-bg);border:1px solid var(--glass-border)}
-    .instructor-avatar{width:32px;height:32px;border-radius:50%;background:var(--grad-primary);
-      display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;flex-shrink:0}
-    .instructor-info{line-height:1.3}
-    .instructor-info strong{font-size:.8rem;display:block}
-    .instructor-info small{font-size:.7rem;color:var(--mist)}
-    .sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);
-      z-index:190;backdrop-filter:blur(4px)}
-    .sidebar-overlay.show{display:block}
-
-    /* FETCH STATUS */
-    .fetch-status{margin-left:auto;font-size:.68rem;font-weight:600;padding:2px 8px;
-      border-radius:var(--r-full);display:flex;align-items:center;gap:5px;transition:all .4s}
-    .fetch-status .dot{width:6px;height:6px;border-radius:50%;background:currentColor;flex-shrink:0}
-    .fetch-status.loading{color:var(--amber);background:var(--amber-pale)}
-    .fetch-status.success{color:var(--emerald);background:var(--emerald-pale)}
-    .fetch-status.error{color:var(--rose);background:var(--rose-pale)}
-    .fetch-status.cached{color:var(--mist);background:rgba(148,163,184,.1)}
-
-    /* MAIN */
-    .main-content{flex:1;margin-left:var(--sidebar-w);display:flex;flex-direction:column;min-height:100vh}
-
-    /* TOPBAR */
-    .topbar{height:var(--header-h);background:rgba(15,23,42,.85);backdrop-filter:blur(20px);
-      border-bottom:1px solid var(--glass-border);display:flex;align-items:center;gap:12px;
-      padding:0 24px;position:sticky;top:0;z-index:100}
-    .hamburger{display:none;width:36px;height:36px;border-radius:var(--r-sm);
-      background:var(--glass-bg);border:1px solid var(--glass-border);
-      align-items:center;justify-content:center;color:var(--white);font-size:1rem;
-      cursor:pointer;transition:background .2s}
-    .hamburger:hover{background:rgba(255,255,255,.08)}
-    .topbar-title{font-family:var(--font-display);font-weight:700;font-size:1.1rem;letter-spacing:-.3px}
-    .topbar-actions{margin-left:auto;display:flex;align-items:center;gap:10px}
-    .icon-btn{width:36px;height:36px;border-radius:var(--r-sm);background:var(--glass-bg);
-      border:1px solid var(--glass-border);display:flex;align-items:center;justify-content:center;
-      color:var(--mist);font-size:.9rem;cursor:pointer;transition:all .2s;text-decoration:none}
-    .icon-btn:hover{color:var(--white);background:rgba(255,255,255,.08)}
-    .dict-btn{display:flex;align-items:center;gap:7px;padding:7px 14px;border-radius:var(--r-full);
-      background:var(--royal-pale);border:1px solid rgba(37,99,235,.3);
-      color:var(--royal-soft);font-size:.8rem;font-weight:600;cursor:pointer;
-      transition:all .2s;text-decoration:none}
-    .dict-btn:hover{background:rgba(37,99,235,.2);transform:translateY(-1px)}
-
-    /* PAGE */
-    .page-content{flex:1;padding:28px 28px 40px;max-width:1100px}
-
-    /* HERO */
-    .hero-banner{background:var(--grad-primary);border-radius:var(--r-lg);padding:32px 36px;
-      margin-bottom:28px;position:relative;overflow:hidden;
-      box-shadow:0 20px 60px rgba(37,99,235,.35);animation:fadeIn .6s ease forwards}
-    .hero-banner::before{content:'';position:absolute;right:-60px;top:-60px;
-      width:280px;height:280px;border-radius:50%;background:rgba(255,255,255,.07)}
-    .hero-banner::after{content:'';position:absolute;right:60px;bottom:-80px;
-      width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,.05)}
-    .hero-eyebrow{font-size:.75rem;font-weight:600;letter-spacing:.1em;
-      text-transform:uppercase;color:rgba(255,255,255,.7);margin-bottom:8px}
-    .hero-title{font-family:var(--font-display);font-size:clamp(1.6rem,3vw,2.4rem);
-      font-weight:800;line-height:1.1;letter-spacing:-.5px;margin-bottom:6px;transition:opacity .3s}
-    .hero-khmer{font-family:'Koulen',cursive;font-size:clamp(1.2rem,2.5vw,1.6rem);
-      color:rgba(255,255,255,.85);margin-bottom:12px;transition:opacity .3s}
-    .hero-subtitle{font-size:.9rem;color:rgba(255,255,255,.75);transition:opacity .3s}
-
-    /* ANNOUNCEMENT */
-    .announcement-card{background:rgba(15,23,42,.7);border:1px solid rgba(37,99,235,.35);
-      border-radius:var(--r-md);padding:18px 20px;margin-bottom:28px;
-      backdrop-filter:blur(12px);position:relative;overflow:hidden;
-      animation:fadeIn .6s ease .1s both}
-    .announcement-card::before{content:'';position:absolute;left:0;top:0;bottom:0;
-      width:3px;background:var(--grad-primary)}
-    .ann-header{display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap}
-    .ann-icon{width:30px;height:30px;border-radius:var(--r-sm);background:var(--royal-pale);
-      display:flex;align-items:center;justify-content:center;color:var(--royal-soft);font-size:.85rem;
-      animation:pulseIcon 2s ease-in-out infinite;flex-shrink:0}
-    @keyframes pulseIcon{0%,100%{box-shadow:0 0 0 0 rgba(37,99,235,.4)}50%{box-shadow:0 0 0 6px rgba(37,99,235,0)}}
-    .ann-title{font-family:var(--font-display);font-size:.8rem;font-weight:700;
-      letter-spacing:.08em;text-transform:uppercase;
-      background:var(--grad-primary);-webkit-background-clip:text;background-clip:text;color:transparent}
-    .ann-retry{margin-left:8px;background:var(--rose-pale);border:1px solid rgba(225,29,72,.3);
-      color:var(--rose);font-size:.7rem;font-weight:600;padding:3px 10px;
-      border-radius:var(--r-full);cursor:pointer;transition:all .2s;display:none}
-    .ann-retry:hover{background:rgba(225,29,72,.2)}
-    .ann-retry.visible{display:inline-flex;align-items:center;gap:5px}
-    .ann-skeleton{height:16px;border-radius:6px;
-      background:linear-gradient(90deg,rgba(255,255,255,.05) 25%,rgba(255,255,255,.1) 50%,rgba(255,255,255,.05) 75%);
-      background-size:200% 100%;animation:shimmer 1.5s infinite;margin-bottom:8px}
-    @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
-    .ann-skeleton:nth-child(2){width:75%;animation-delay:.15s}
-    .ann-messages p{font-size:.875rem;line-height:1.7;color:rgba(255,255,255,.88);
-      padding:10px 14px;border-radius:var(--r-sm);background:rgba(255,255,255,.03);
-      margin-bottom:8px;opacity:0;animation:fadeSlideIn .5s ease forwards;word-break:break-word}
-    .ann-messages p:last-child{margin-bottom:0}
-    @keyframes fadeSlideIn{from{transform:translateY(10px);opacity:0}to{transform:translateY(0);opacity:1}}
-
-    /* SECTION LABEL */
-    .section-label{font-family:var(--font-display);font-size:.75rem;font-weight:700;
-      letter-spacing:.1em;text-transform:uppercase;color:var(--mist);
-      margin-bottom:14px;margin-top:4px;display:flex;align-items:center;gap:8px}
-    .section-label::after{content:'';flex:1;height:1px;background:var(--glass-border)}
-
-    /* QUICK GRID */
-    .quick-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
-      gap:14px;margin-bottom:28px}
-    .action-card{display:flex;flex-direction:column;padding:22px 20px;border-radius:var(--r-md);
-      border:1px solid var(--glass-border);background:rgba(255,255,255,.035);
-      backdrop-filter:blur(12px);cursor:pointer;transition:all .3s var(--ease-smooth);
-      text-decoration:none;color:var(--white);position:relative;overflow:hidden;
-      min-height:130px;text-align:left}
-    .action-card::before{content:'';position:absolute;inset:0;
-      background:var(--card-grad);opacity:0;transition:opacity .3s}
-    .action-card:hover{transform:translateY(-4px);box-shadow:0 16px 40px rgba(0,0,0,.4)}
-    .action-card:hover::before{opacity:1}
-    .action-card:active{transform:translateY(-2px)}
-    .action-card-icon{width:42px;height:42px;border-radius:var(--r-sm);display:flex;
-      align-items:center;justify-content:center;font-size:1.1rem;margin-bottom:14px;
-      position:relative;z-index:1;transition:transform .3s var(--ease-out)}
-    .action-card:hover .action-card-icon{transform:scale(1.1) rotate(-5deg)}
-    .action-card-label{font-family:var(--font-display);font-size:.95rem;font-weight:700;
-      margin-bottom:4px;position:relative;z-index:1}
-    .action-card-sub{font-size:.75rem;color:rgba(255,255,255,.6);line-height:1.4;position:relative;z-index:1}
-    .action-card-khmer{font-family:'Koulen',cursive;font-size:.75rem;
-      color:rgba(255,255,255,.45);margin-top:4px;position:relative;z-index:1}
-
-    .card-blue{--card-grad:linear-gradient(135deg,rgba(37,99,235,.18),rgba(37,99,235,.05));border-color:rgba(37,99,235,.3)}
-    .card-blue .action-card-icon{background:var(--royal-pale);color:var(--royal-soft)}
-    .card-blue:hover{border-color:rgba(37,99,235,.6);box-shadow:0 16px 40px rgba(37,99,235,.25)}
-    .card-violet{--card-grad:linear-gradient(135deg,rgba(124,58,237,.18),rgba(124,58,237,.05));border-color:rgba(124,58,237,.3)}
-    .card-violet .action-card-icon{background:var(--violet-pale);color:var(--violet-soft)}
-    .card-violet:hover{border-color:rgba(124,58,237,.6);box-shadow:0 16px 40px rgba(124,58,237,.25)}
-    .card-amber{--card-grad:linear-gradient(135deg,rgba(217,119,6,.18),rgba(217,119,6,.05));border-color:rgba(217,119,6,.3)}
-    .card-amber .action-card-icon{background:var(--amber-pale);color:var(--amber)}
-    .card-amber:hover{border-color:rgba(217,119,6,.6);box-shadow:0 16px 40px rgba(217,119,6,.2)}
-    .card-teal{--card-grad:linear-gradient(135deg,rgba(13,148,136,.18),rgba(13,148,136,.05));border-color:rgba(13,148,136,.3)}
-    .card-teal .action-card-icon{background:var(--teal-pale);color:var(--teal)}
-    .card-teal:hover{border-color:rgba(13,148,136,.6);box-shadow:0 16px 40px rgba(13,148,136,.2)}
-    .card-rose{--card-grad:linear-gradient(135deg,rgba(225,29,72,.18),rgba(225,29,72,.05));border-color:rgba(225,29,72,.3)}
-    .card-rose .action-card-icon{background:var(--rose-pale);color:var(--rose)}
-    .card-rose:hover{border-color:rgba(225,29,72,.6);box-shadow:0 16px 40px rgba(225,29,72,.2)}
-    .card-emerald{--card-grad:linear-gradient(135deg,rgba(5,150,105,.18),rgba(5,150,105,.05));border-color:rgba(5,150,105,.3)}
-    .card-emerald .action-card-icon{background:var(--emerald-pale);color:var(--emerald)}
-    .card-emerald:hover{border-color:rgba(5,150,105,.6);box-shadow:0 16px 40px rgba(5,150,105,.2)}
-
-    .action-card.card-rewards{background:linear-gradient(135deg,rgba(37,99,235,.2),rgba(124,58,237,.2));border-color:rgba(124,58,237,.4)}
-    .action-card.card-rewards .action-card-icon{background:var(--grad-primary);color:white;
-      box-shadow:0 4px 14px rgba(124,58,237,.4);animation:bounceIcon 2.5s ease-in-out infinite}
-    @keyframes bounceIcon{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
-    .action-card.card-ai{background:linear-gradient(135deg,rgba(124,58,237,.2),rgba(13,148,136,.2));border-color:rgba(13,148,136,.4)}
-    .action-card.card-ai .action-card-icon{background:var(--grad-teal);color:white;box-shadow:0 4px 14px rgba(13,148,136,.4)}
-    .ai-pulse-ring{position:absolute;inset:-2px;border-radius:inherit;
-      border:2px solid rgba(13,148,136,.5);animation:aiRing 2s ease-in-out infinite;pointer-events:none}
-    @keyframes aiRing{0%{transform:scale(1);opacity:.8}100%{transform:scale(1.08);opacity:0}}
-
-    /* ═══════════════════════════════════════════════════════════
-       STAT CARDS — fully wired to backend
-    ═══════════════════════════════════════════════════════════ */
-    .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
-      gap:14px;margin-bottom:28px}
-    .stat-card{background:rgba(255,255,255,.035);backdrop-filter:blur(12px);
-      border:1px solid var(--glass-border);border-radius:var(--r-md);
-      padding:20px;transition:all .3s var(--ease-smooth);position:relative;overflow:hidden}
-    .stat-card:hover{transform:translateY(-4px);box-shadow:0 16px 40px rgba(0,0,0,.4)}
-    .stat-card::before{content:'';position:absolute;inset:0;
-      background:var(--stat-grad,transparent);opacity:0;transition:opacity .3s;z-index:0}
-    .stat-card:hover::before{opacity:1}
-    .stat-top{display:flex;align-items:center;justify-content:space-between;
-      margin-bottom:16px;position:relative;z-index:1}
-    .stat-icon{width:38px;height:38px;border-radius:var(--r-sm);
-      display:flex;align-items:center;justify-content:center;font-size:.95rem;
-      transition:transform .3s var(--ease-out)}
-    .stat-card:hover .stat-icon{transform:scale(1.1) rotate(-5deg)}
-    .stat-trend{font-size:.7rem;font-weight:700;padding:3px 9px;
-      border-radius:var(--r-full);display:flex;align-items:center;gap:4px}
-    .stat-trend.up{background:var(--emerald-pale);color:var(--emerald)}
-    .stat-trend.down{background:var(--rose-pale);color:var(--rose)}
-    .stat-trend.neutral{background:var(--royal-pale);color:var(--royal-soft)}
-
-    /* Value with count-up animation */
-    .stat-value{font-family:var(--font-display);font-size:2rem;font-weight:800;
-      line-height:1;margin-bottom:4px;letter-spacing:-1px;
-      position:relative;z-index:1;transition:color .4s}
-    .stat-label{font-size:.78rem;color:var(--mist);position:relative;z-index:1}
-
-    /* Skeleton shimmer for stat cards */
-    .stat-value.loading{color:transparent;background:linear-gradient(90deg,
-      rgba(255,255,255,.07) 25%,rgba(255,255,255,.15) 50%,rgba(255,255,255,.07) 75%);
-      background-size:200% 100%;animation:shimmer 1.5s infinite;
-      border-radius:6px;min-width:60px;display:inline-block}
-    .stat-trend.loading{background:rgba(255,255,255,.07);color:transparent;
-      animation:shimmer 1.5s infinite;background-size:200% 100%}
-
-    /* FAB */
-    .fab-telegram{position:fixed;bottom:28px;right:28px;z-index:500;
-      width:56px;height:56px;border-radius:50%;background:var(--grad-primary);
-      box-shadow:0 8px 30px rgba(37,99,235,.5);display:flex;align-items:center;
-      justify-content:center;cursor:pointer;transition:all .3s var(--ease-out);
-      border:2px solid rgba(255,255,255,.15);text-decoration:none}
-    .fab-telegram:hover{transform:scale(1.1) rotate(8deg);box-shadow:0 12px 40px rgba(37,99,235,.7)}
-    .fab-telegram svg{width:26px;height:26px;fill:white}
-
-    /* TELEGRAM POPUP */
-    .telegram-popup{position:fixed;bottom:96px;right:28px;z-index:501;width:300px;
-      background:rgba(15,23,42,.95);backdrop-filter:blur(20px);
-      border:1px solid rgba(37,99,235,.35);border-radius:var(--r-lg);
-      box-shadow:0 20px 60px rgba(0,0,0,.5);overflow:hidden;
-      transform:translateY(10px) scale(.95);opacity:0;pointer-events:none;
-      transition:all .35s var(--ease-out)}
-    .telegram-popup.show{transform:translateY(0) scale(1);opacity:1;pointer-events:all}
-    .tg-popup-header{padding:16px 18px;background:var(--grad-primary);
-      display:flex;align-items:center;gap:10px;font-weight:700;font-size:.9rem;position:relative}
-    .tg-popup-header svg{width:18px;height:18px;fill:white;flex-shrink:0}
-    .tg-popup-close{position:absolute;top:12px;right:12px;width:22px;height:22px;
-      border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;
-      justify-content:center;cursor:pointer;font-size:.75rem;transition:background .2s,transform .2s}
-    .tg-popup-close:hover{background:rgba(255,255,255,.35);transform:rotate(90deg)}
-    .tg-popup-body{padding:16px 18px;font-size:.85rem;color:rgba(255,255,255,.8);line-height:1.6}
-    .tg-popup-footer{padding:0 18px 16px}
-    .tg-btn{display:block;width:100%;padding:10px;background:var(--grad-primary);
-      border-radius:var(--r-sm);color:white;font-weight:600;font-size:.85rem;
-      text-align:center;transition:opacity .2s,transform .2s;text-decoration:none}
-    .tg-btn:hover{opacity:.9;transform:translateY(-1px)}
-
-    /* FOOTER */
-    .page-footer{padding:24px 28px;border-top:1px solid var(--glass-border);
-      font-size:.8rem;color:var(--ink-4);display:flex;align-items:center;
-      gap:6px;background:rgba(15,23,42,.5);flex-wrap:wrap}
-    .page-footer i{color:var(--rose);animation:heartbeat 1.5s ease-in-out infinite}
-    @keyframes heartbeat{0%,100%{transform:scale(1)}50%{transform:scale(1.25)}}
-
-    /* ANIMATIONS */
-    @keyframes fadeIn{from{transform:translateY(16px);opacity:0}to{transform:translateY(0);opacity:1}}
-    .quick-grid .action-card:nth-child(1){animation:fadeIn .5s ease .05s both}
-    .quick-grid .action-card:nth-child(2){animation:fadeIn .5s ease .10s both}
-    .quick-grid .action-card:nth-child(3){animation:fadeIn .5s ease .15s both}
-    .quick-grid .action-card:nth-child(4){animation:fadeIn .5s ease .20s both}
-    .quick-grid .action-card:nth-child(5){animation:fadeIn .5s ease .25s both}
-    .quick-grid .action-card:nth-child(6){animation:fadeIn .5s ease .30s both}
-    .quick-grid .action-card:nth-child(7){animation:fadeIn .5s ease .35s both}
-    .quick-grid .action-card:nth-child(8){animation:fadeIn .5s ease .40s both}
-    .stats-grid .stat-card:nth-child(1){animation:fadeIn .5s ease .10s both}
-    .stats-grid .stat-card:nth-child(2){animation:fadeIn .5s ease .18s both}
-    .stats-grid .stat-card:nth-child(3){animation:fadeIn .5s ease .26s both}
-    .stats-grid .stat-card:nth-child(4){animation:fadeIn .5s ease .34s both}
-
-    /* RESPONSIVE */
-    @media(max-width:1024px){
-      .sidebar{transform:translateX(-100%)}
-      .sidebar.open{transform:translateX(0);box-shadow:4px 0 40px rgba(0,0,0,.5)}
-      .main-content{margin-left:0}
-      .hamburger{display:flex}
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--font-body);
+      background: var(--ink);
+      color: #fff;
+      min-height: 100vh;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
     }
-    @media(max-width:640px){
-      .page-content{padding:18px 16px 32px}
-      .hero-banner{padding:24px 22px}
-      .quick-grid{grid-template-columns:1fr 1fr;gap:10px}
-      .stats-grid{grid-template-columns:1fr 1fr;gap:10px}
-      .topbar{padding:0 16px}
-      .fab-telegram{bottom:20px;right:20px}
-      .telegram-popup{right:20px;width:calc(100vw - 40px)}
-    }
-    @media(max-width:420px){.quick-grid{grid-template-columns:1fr}}
-    @media(prefers-reduced-motion:reduce){
-      *,*::before,*::after{animation-duration:.01ms !important;
-        animation-iteration-count:1 !important;transition-duration:.01ms !important}
-    }
+    a { text-decoration: none; color: inherit; }
+    button { border: none; cursor: pointer; font-family: var(--font-body); }
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 4px; }
+
+```
+/* ── CANVAS BG ── */
+.bg-canvas {
+  position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden;
+}
+.bg-orb {
+  position: absolute; border-radius: 50%; filter: blur(80px);
+  animation: orbFloat 18s ease-in-out infinite alternate;
+}
+.bg-orb-1 { width: 500px; height: 500px; background: rgba(59,126,248,0.12); top: -150px; left: -100px; }
+.bg-orb-2 { width: 400px; height: 400px; background: rgba(139,92,246,0.10); bottom: -100px; right: -80px; animation-delay: -8s; animation-duration: 22s; }
+.bg-orb-3 { width: 300px; height: 300px; background: rgba(20,184,166,0.08); top: 50%; left: 50%; transform: translate(-50%,-50%); animation-delay: -4s; animation-duration: 26s; }
+.bg-grid {
+  position: absolute; inset: 0;
+  background-image: linear-gradient(rgba(255,255,255,.018) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.018) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+@keyframes orbFloat {
+  0% { transform: translate(0,0) scale(1); }
+  100% { transform: translate(30px, 20px) scale(1.08); }
+}
+
+/* ── SCROLL PROGRESS ── */
+.scroll-bar { position: fixed; top: 0; left: 0; height: 2px; width: 0; z-index: 9999; background: linear-gradient(90deg, var(--pellet-blue), var(--pellet-violet)); box-shadow: 0 0 10px rgba(59,126,248,.6); transition: width .1s linear; }
+
+/* ── APP SHELL ── */
+.app { position: relative; z-index: 1; display: flex; min-height: 100vh; }
+
+/* ── SIDEBAR ── */
+.sidebar {
+  width: var(--sidebar-w); flex-shrink: 0;
+  background: rgba(10,15,30,0.95); backdrop-filter: blur(28px);
+  border-right: 1px solid var(--glass-border);
+  display: flex; flex-direction: column;
+  position: fixed; top: 0; left: 0; bottom: 0; z-index: 300;
+  transition: transform .3s var(--ease-smooth);
+  overflow-y: auto; scrollbar-width: none;
+}
+.sidebar::-webkit-scrollbar { display: none; }
+
+.sidebar-logo {
+  padding: 20px 18px; border-bottom: 1px solid var(--glass-border);
+  display: flex; align-items: center; gap: 12px;
+}
+.logo-pill {
+  width: 38px; height: 38px; border-radius: 12px; flex-shrink: 0;
+  background: linear-gradient(135deg, var(--pellet-blue), var(--pellet-violet));
+  display: flex; align-items: center; justify-content: center; font-size: 1rem;
+  box-shadow: 0 4px 16px rgba(59,126,248,.4);
+}
+.logo-name { font-family: var(--font-display); font-size: 1.05rem; font-weight: 800; letter-spacing: -.3px; }
+.logo-sub { font-size: .68rem; color: rgba(255,255,255,.4); margin-top: 1px; }
+
+.sidebar-section { padding: 16px 12px 4px; }
+.sidebar-label { font-size: .62rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: rgba(255,255,255,.25); padding: 0 8px; margin-bottom: 4px; }
+
+.nav-item {
+  display: flex; align-items: center; gap: 10px; padding: 9px 12px;
+  border-radius: 10px; color: rgba(255,255,255,.5); font-size: .83rem; font-weight: 500;
+  cursor: pointer; transition: all .2s ease; position: relative; margin-bottom: 2px;
+  text-decoration: none;
+}
+.nav-item:hover { background: var(--glass); color: rgba(255,255,255,.85); }
+.nav-item.active {
+  background: rgba(59,126,248,.12); color: #7ab3fd;
+  border: 1px solid rgba(59,126,248,.2);
+}
+.nav-item.active::before {
+  content: ''; position: absolute; left: 0; top: 50%; transform: translateY(-50%);
+  width: 3px; height: 55%; background: var(--pellet-blue); border-radius: 0 3px 3px 0;
+}
+.nav-item i { width: 16px; text-align: center; font-size: .85rem; opacity: .8; }
+.nav-badge {
+  margin-left: auto; background: var(--pellet-rose); color: white;
+  font-size: .6rem; font-weight: 700; padding: 2px 7px; border-radius: 20px;
+}
+
+.sidebar-footer {
+  margin-top: auto; padding: 14px 12px;
+  border-top: 1px solid var(--glass-border);
+}
+.profile-chip {
+  display: flex; align-items: center; gap: 10px; padding: 10px 12px;
+  border-radius: 12px; background: var(--glass); border: 1px solid var(--glass-border);
+}
+.profile-avatar {
+  width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0;
+  background: linear-gradient(135deg, var(--pellet-blue), var(--pellet-violet));
+  display: flex; align-items: center; justify-content: center;
+  font-size: .75rem; font-weight: 800;
+}
+.profile-name { font-size: .8rem; font-weight: 600; }
+.profile-role { font-size: .67rem; color: rgba(255,255,255,.38); }
+
+.sidebar-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,.65); z-index: 290;
+  backdrop-filter: blur(4px);
+}
+.sidebar-overlay.show { display: block; }
+
+/* ── MAIN ── */
+.main { flex: 1; margin-left: var(--sidebar-w); display: flex; flex-direction: column; min-height: 100vh; }
+
+/* ── HEADER ── */
+.header {
+  position: sticky; top: 0; z-index: 200;
+  height: 60px;
+  background: rgba(10,15,30,.88); backdrop-filter: blur(24px) saturate(180%);
+  border-bottom: 1px solid var(--glass-border);
+  display: flex; align-items: center; gap: 10px; padding: 0 20px;
+}
+.hamburger {
+  display: none; width: 34px; height: 34px; border-radius: 9px;
+  background: var(--glass); border: 1px solid var(--glass-border);
+  align-items: center; justify-content: center; color: #fff; font-size: .9rem; cursor: pointer;
+  transition: background .2s;
+}
+.hamburger:hover { background: rgba(255,255,255,.08); }
+.header-title { font-family: var(--font-display); font-weight: 700; font-size: 1rem; letter-spacing: -.2px; }
+.header-actions { margin-left: auto; display: flex; align-items: center; gap: 8px; }
+
+/* Header pill buttons */
+.hdr-btn {
+  display: flex; align-items: center; gap: 6px;
+  padding: 7px 14px; border-radius: 20px;
+  font-size: .78rem; font-weight: 600; cursor: pointer;
+  transition: all .2s; text-decoration: none; white-space: nowrap;
+  border: 1px solid transparent;
+}
+.hdr-btn-ghost {
+  background: var(--glass); border-color: var(--glass-border); color: rgba(255,255,255,.7);
+}
+.hdr-btn-ghost:hover { color: #fff; background: rgba(255,255,255,.09); }
+.hdr-btn-blue {
+  background: rgba(59,126,248,.15); border-color: rgba(59,126,248,.35); color: #7ab3fd;
+}
+.hdr-btn-blue:hover { background: rgba(59,126,248,.25); transform: translateY(-1px); }
+.hdr-icon {
+  width: 34px; height: 34px; border-radius: 9px;
+  background: var(--glass); border: 1px solid var(--glass-border);
+  display: flex; align-items: center; justify-content: center;
+  color: rgba(255,255,255,.55); font-size: .85rem;
+  transition: all .2s; cursor: pointer; text-decoration: none;
+}
+.hdr-icon:hover { color: #fff; background: rgba(255,255,255,.08); }
+
+/* ── PAGE ── */
+.page { flex: 1; padding: 24px 22px 40px; max-width: 1080px; width: 100%; }
+
+/* ── HERO ── */
+.hero {
+  border-radius: 20px; padding: 28px 28px; margin-bottom: 20px; position: relative; overflow: hidden;
+  background: linear-gradient(135deg, #1a2a6c 0%, #2e1760 50%, #1a3a5c 100%);
+  border: 1px solid rgba(255,255,255,.08);
+  box-shadow: 0 20px 60px rgba(0,0,0,.4);
+  animation: fadeUp .55s ease forwards;
+}
+.hero::before {
+  content: ''; position: absolute; right: -60px; top: -60px;
+  width: 260px; height: 260px; border-radius: 50%;
+  background: rgba(255,255,255,.05);
+}
+.hero::after {
+  content: ''; position: absolute; right: 80px; bottom: -80px;
+  width: 180px; height: 180px; border-radius: 50%;
+  background: rgba(255,255,255,.04);
+}
+.hero-eyebrow {
+  font-size: .68rem; font-weight: 700; letter-spacing: .12em;
+  text-transform: uppercase; color: rgba(255,255,255,.55); margin-bottom: 6px;
+}
+.hero-title {
+  font-family: var(--font-display); font-size: clamp(1.5rem, 3.5vw, 2.2rem);
+  font-weight: 800; line-height: 1.1; letter-spacing: -.4px; margin-bottom: 5px;
+}
+.hero-khmer {
+  font-family: 'Koulen', cursive; font-size: clamp(1rem, 2.5vw, 1.4rem);
+  color: rgba(255,255,255,.7); margin-bottom: 10px;
+}
+.hero-sub { font-size: .85rem; color: rgba(255,255,255,.6); }
+.hero-sub strong { color: rgba(255,255,255,.85); }
+
+/* ── STATUS PILL ── */
+.status-pill {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: .68rem; font-weight: 600; padding: 3px 9px; border-radius: 20px;
+  transition: all .35s;
+}
+.status-pill .dot { width: 5px; height: 5px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+.status-pill.loading { color: var(--pellet-amber); background: rgba(245,158,11,.12); border: 1px solid rgba(245,158,11,.25); }
+.status-pill.success { color: var(--pellet-emerald); background: rgba(16,185,129,.12); border: 1px solid rgba(16,185,129,.25); }
+.status-pill.error { color: var(--pellet-rose); background: rgba(244,63,94,.12); border: 1px solid rgba(244,63,94,.25); }
+.status-pill.cached { color: rgba(255,255,255,.4); background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.08); }
+
+/* ── ANNOUNCEMENT ── */
+.ann-card {
+  border-radius: 16px; margin-bottom: 22px; overflow: hidden;
+  background: rgba(10,15,30,.7); backdrop-filter: blur(16px);
+  border: 1px solid rgba(59,126,248,.2);
+  animation: fadeUp .55s ease .08s both;
+  position: relative;
+}
+.ann-card::before {
+  content: ''; position: absolute; left: 0; top: 0; bottom: 0;
+  width: 3px; background: linear-gradient(180deg, var(--pellet-blue), var(--pellet-violet));
+}
+.ann-header {
+  display: flex; align-items: center; gap: 10px;
+  padding: 14px 18px 10px 20px; flex-wrap: wrap;
+}
+.ann-icon-wrap {
+  width: 28px; height: 28px; border-radius: 8px; flex-shrink: 0;
+  background: rgba(59,126,248,.12); color: #7ab3fd;
+  display: flex; align-items: center; justify-content: center; font-size: .8rem;
+  animation: pulseGlow 2.5s ease-in-out infinite;
+}
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(59,126,248,.3); }
+  50% { box-shadow: 0 0 0 6px rgba(59,126,248,0); }
+}
+.ann-title-text {
+  font-family: var(--font-display); font-size: .78rem; font-weight: 700;
+  letter-spacing: .07em; text-transform: uppercase;
+  background: linear-gradient(90deg, var(--pellet-blue), var(--pellet-violet));
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.ann-body { padding: 4px 18px 16px 20px; }
+.ann-skeleton {
+  height: 13px; border-radius: 6px; margin-bottom: 8px;
+  background: linear-gradient(90deg, rgba(255,255,255,.05) 25%, rgba(255,255,255,.1) 50%, rgba(255,255,255,.05) 75%);
+  background-size: 200% 100%; animation: shimmer 1.5s infinite;
+}
+@keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+.ann-msg {
+  font-size: .85rem; line-height: 1.75; color: rgba(255,255,255,.82);
+  padding: 9px 12px; border-radius: 10px;
+  background: rgba(255,255,255,.03); margin-bottom: 6px;
+  opacity: 0; animation: fadeSlide .45s ease forwards;
+}
+.ann-msg:last-child { margin-bottom: 0; }
+.ann-retry-btn {
+  display: none; align-items: center; gap: 5px;
+  background: rgba(244,63,94,.1); border: 1px solid rgba(244,63,94,.25);
+  color: var(--pellet-rose); font-size: .7rem; font-weight: 600;
+  padding: 3px 10px; border-radius: 20px; cursor: pointer; transition: all .2s;
+}
+.ann-retry-btn.show { display: inline-flex; }
+.ann-retry-btn:hover { background: rgba(244,63,94,.2); }
+
+/* ── SECTION HEADER ── */
+.section-hdr {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 14px; margin-top: 6px;
+}
+.section-hdr-label {
+  font-family: var(--font-display); font-size: .7rem; font-weight: 700;
+  letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255,.35); white-space: nowrap;
+}
+.section-hdr-line { flex: 1; height: 1px; background: var(--glass-border); }
+
+/* ── PELLET CARDS ── */
+.cards-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(152px, 1fr));
+  gap: 12px; margin-bottom: 24px;
+}
+.pellet-card {
+  display: flex; flex-direction: column; padding: 18px 16px; border-radius: 16px;
+  border: 1px solid var(--glass-border); background: rgba(255,255,255,.03);
+  backdrop-filter: blur(12px); cursor: pointer;
+  transition: all .3s var(--ease-spring); text-decoration: none; color: #fff;
+  position: relative; overflow: hidden; min-height: 120px;
+}
+.pellet-card::before {
+  content: ''; position: absolute; inset: 0; opacity: 0;
+  background: var(--card-shine); transition: opacity .3s;
+}
+.pellet-card:hover { transform: translateY(-5px) scale(1.01); }
+.pellet-card:hover::before { opacity: 1; }
+.pellet-card:active { transform: translateY(-2px) scale(.99); }
+
+.card-icon {
+  width: 38px; height: 38px; border-radius: 11px; margin-bottom: 12px;
+  display: flex; align-items: center; justify-content: center; font-size: 1rem;
+  position: relative; z-index: 1;
+  transition: transform .3s var(--ease-spring);
+}
+.pellet-card:hover .card-icon { transform: scale(1.12) rotate(-6deg); }
+.card-name {
+  font-family: var(--font-display); font-size: .88rem; font-weight: 700;
+  margin-bottom: 3px; position: relative; z-index: 1;
+}
+.card-desc { font-size: .7rem; color: rgba(255,255,255,.5); line-height: 1.4; position: relative; z-index: 1; }
+.card-khmer { font-family: 'Koulen', cursive; font-size: .68rem; color: rgba(255,255,255,.3); margin-top: 4px; position: relative; z-index: 1; }
+.card-ring {
+  position: absolute; inset: -2px; border-radius: inherit;
+  border: 1.5px solid rgba(255,255,255,.18); pointer-events: none;
+  animation: ringPulse 2.5s ease-in-out infinite;
+}
+@keyframes ringPulse { 0%, 100% { opacity: .8; transform: scale(1); } 50% { opacity: 0; transform: scale(1.05); } }
+
+/* Pellet color variants */
+.c-blue { --card-shine: linear-gradient(135deg,rgba(59,126,248,.15),rgba(59,126,248,.04)); border-color: rgba(59,126,248,.25); }
+.c-blue .card-icon { background: rgba(59,126,248,.15); color: #7ab3fd; }
+.c-blue:hover { border-color: rgba(59,126,248,.55); box-shadow: 0 14px 40px rgba(59,126,248,.2); }
+.c-violet { --card-shine: linear-gradient(135deg,rgba(139,92,246,.15),rgba(139,92,246,.04)); border-color: rgba(139,92,246,.25); }
+.c-violet .card-icon { background: rgba(139,92,246,.15); color: #a78bfa; }
+.c-violet:hover { border-color: rgba(139,92,246,.55); box-shadow: 0 14px 40px rgba(139,92,246,.2); }
+.c-amber { --card-shine: linear-gradient(135deg,rgba(245,158,11,.15),rgba(245,158,11,.04)); border-color: rgba(245,158,11,.25); }
+.c-amber .card-icon { background: rgba(245,158,11,.15); color: #fcd34d; }
+.c-amber:hover { border-color: rgba(245,158,11,.55); box-shadow: 0 14px 40px rgba(245,158,11,.15); }
+.c-teal { --card-shine: linear-gradient(135deg,rgba(20,184,166,.15),rgba(20,184,166,.04)); border-color: rgba(20,184,166,.25); }
+.c-teal .card-icon { background: rgba(20,184,166,.15); color: #5eead4; }
+.c-teal:hover { border-color: rgba(20,184,166,.55); box-shadow: 0 14px 40px rgba(20,184,166,.15); }
+.c-rose { --card-shine: linear-gradient(135deg,rgba(244,63,94,.15),rgba(244,63,94,.04)); border-color: rgba(244,63,94,.25); }
+.c-rose .card-icon { background: rgba(244,63,94,.15); color: #fb7185; }
+.c-rose:hover { border-color: rgba(244,63,94,.55); box-shadow: 0 14px 40px rgba(244,63,94,.15); }
+.c-emerald { --card-shine: linear-gradient(135deg,rgba(16,185,129,.15),rgba(16,185,129,.04)); border-color: rgba(16,185,129,.25); }
+.c-emerald .card-icon { background: rgba(16,185,129,.15); color: #34d399; }
+.c-emerald:hover { border-color: rgba(16,185,129,.55); box-shadow: 0 14px 40px rgba(16,185,129,.15); }
+.c-indigo { --card-shine: linear-gradient(135deg,rgba(99,102,241,.15),rgba(99,102,241,.04)); border-color: rgba(99,102,241,.25); }
+.c-indigo .card-icon { background: rgba(99,102,241,.15); color: #a5b4fc; }
+.c-indigo:hover { border-color: rgba(99,102,241,.55); box-shadow: 0 14px 40px rgba(99,102,241,.15); }
+.c-coral { --card-shine: linear-gradient(135deg,rgba(251,113,133,.15),rgba(251,113,133,.04)); border-color: rgba(251,113,133,.25); }
+.c-coral .card-icon { background: rgba(251,113,133,.15); color: #fda4af; }
+.c-coral:hover { border-color: rgba(251,113,133,.55); box-shadow: 0 14px 40px rgba(251,113,133,.15); }
+
+/* Special cards */
+.c-rewards { background: linear-gradient(135deg,rgba(59,126,248,.15),rgba(139,92,246,.15)); border-color: rgba(139,92,246,.35); }
+.c-rewards .card-icon { background: linear-gradient(135deg, var(--pellet-blue), var(--pellet-violet)); color: white; box-shadow: 0 4px 14px rgba(139,92,246,.4); animation: iconBounce 2.5s ease-in-out infinite; }
+@keyframes iconBounce { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+.c-ai { background: linear-gradient(135deg,rgba(139,92,246,.15),rgba(20,184,166,.15)); border-color: rgba(20,184,166,.35); }
+.c-ai .card-icon { background: linear-gradient(135deg, var(--pellet-violet), var(--pellet-teal)); color: white; box-shadow: 0 4px 14px rgba(20,184,166,.35); }
+.c-syscheck { background: linear-gradient(135deg,rgba(244,63,94,.12),rgba(245,158,11,.12)); border-color: rgba(244,63,94,.3); }
+.c-syscheck .card-icon { background: linear-gradient(135deg, var(--pellet-rose), var(--pellet-amber)); color: white; box-shadow: 0 4px 14px rgba(244,63,94,.3); }
+
+/* ── STAT CARDS ── */
+.stats-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(165px, 1fr));
+  gap: 12px; margin-bottom: 24px;
+}
+.stat-card {
+  background: rgba(255,255,255,.03); backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border); border-radius: 16px; padding: 18px;
+  transition: all .3s var(--ease-smooth); position: relative; overflow: hidden;
+}
+.stat-card::before {
+  content: ''; position: absolute; inset: 0; opacity: 0;
+  background: var(--stat-shine, transparent); transition: opacity .3s;
+}
+.stat-card:hover { transform: translateY(-4px); box-shadow: 0 16px 40px rgba(0,0,0,.35); }
+.stat-card:hover::before { opacity: 1; }
+.stat-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; position: relative; z-index: 1; }
+.stat-icon {
+  width: 36px; height: 36px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center; font-size: .9rem;
+  transition: transform .3s var(--ease-spring);
+}
+.stat-card:hover .stat-icon { transform: scale(1.12) rotate(-6deg); }
+.stat-badge {
+  font-size: .67rem; font-weight: 700; padding: 3px 8px; border-radius: 20px;
+  display: flex; align-items: center; gap: 3px;
+}
+.badge-up { background: rgba(16,185,129,.12); color: #34d399; border: 1px solid rgba(16,185,129,.2); }
+.badge-down { background: rgba(244,63,94,.12); color: #fb7185; border: 1px solid rgba(244,63,94,.2); }
+.badge-neutral { background: rgba(59,126,248,.12); color: #7ab3fd; border: 1px solid rgba(59,126,248,.2); }
+.badge-loading { background: rgba(255,255,255,.06); color: transparent; border: 1px solid rgba(255,255,255,.08); animation: shimmer 1.5s infinite; background-size: 200% 100%; min-width: 50px; }
+.stat-value {
+  font-family: var(--font-display); font-size: 1.9rem; font-weight: 800;
+  line-height: 1; letter-spacing: -1px; margin-bottom: 3px;
+  position: relative; z-index: 1;
+}
+.stat-value.loading {
+  color: transparent; background: linear-gradient(90deg, rgba(255,255,255,.07) 25%, rgba(255,255,255,.14) 50%, rgba(255,255,255,.07) 75%);
+  background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 6px; min-width: 55px; display: inline-block;
+}
+.stat-lbl { font-size: .75rem; color: rgba(255,255,255,.4); position: relative; z-index: 1; }
+
+/* ── FAB ── */
+.fab {
+  position: fixed; bottom: 24px; right: 24px; z-index: 500;
+  width: 52px; height: 52px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--pellet-blue), var(--pellet-violet));
+  box-shadow: 0 8px 28px rgba(59,126,248,.5);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: all .3s var(--ease-spring);
+  border: 2px solid rgba(255,255,255,.12); text-decoration: none;
+}
+.fab:hover { transform: scale(1.1) rotate(8deg); box-shadow: 0 12px 36px rgba(59,126,248,.7); }
+.fab svg { width: 23px; height: 23px; fill: white; }
+
+/* ── TG POPUP ── */
+.tg-popup {
+  position: fixed; bottom: 88px; right: 24px; z-index: 501; width: 290px;
+  background: rgba(10,15,30,.95); backdrop-filter: blur(24px);
+  border: 1px solid rgba(59,126,248,.25); border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(0,0,0,.5); overflow: hidden;
+  transform: translateY(12px) scale(.95); opacity: 0; pointer-events: none;
+  transition: all .3s var(--ease-spring);
+}
+.tg-popup.show { transform: translateY(0) scale(1); opacity: 1; pointer-events: all; }
+.tg-header {
+  padding: 14px 16px; background: linear-gradient(135deg, var(--pellet-blue), var(--pellet-violet));
+  display: flex; align-items: center; gap: 9px; font-weight: 700; font-size: .87rem; position: relative;
+}
+.tg-header svg { width: 16px; height: 16px; fill: white; flex-shrink: 0; }
+.tg-close {
+  position: absolute; top: 11px; right: 11px; width: 22px; height: 22px;
+  border-radius: 50%; background: rgba(255,255,255,.2);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; font-size: .72rem; transition: all .2s;
+}
+.tg-close:hover { background: rgba(255,255,255,.35); transform: rotate(90deg); }
+.tg-body { padding: 14px 16px; font-size: .82rem; color: rgba(255,255,255,.72); line-height: 1.65; }
+.tg-foot { padding: 0 16px 14px; }
+.tg-cta {
+  display: block; width: 100%; padding: 9px; text-align: center;
+  background: linear-gradient(135deg, var(--pellet-blue), var(--pellet-violet));
+  border-radius: 10px; color: white; font-weight: 600; font-size: .82rem;
+  transition: opacity .2s, transform .2s; text-decoration: none;
+}
+.tg-cta:hover { opacity: .9; transform: translateY(-1px); }
+
+/* ── FOOTER ── */
+.footer {
+  padding: 20px 22px; border-top: 1px solid var(--glass-border);
+  font-size: .75rem; color: rgba(255,255,255,.28);
+  display: flex; align-items: center; gap: 5px;
+  background: rgba(10,15,30,.5); flex-wrap: wrap;
+}
+.footer i { color: var(--pellet-rose); animation: heartbeat 1.6s ease-in-out infinite; }
+@keyframes heartbeat { 0%,100% { transform: scale(1); } 50% { transform: scale(1.28); } }
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp { from { transform: translateY(18px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+@keyframes fadeSlide { from { transform: translateY(8px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+.cards-grid .pellet-card:nth-child(1) { animation: fadeUp .4s ease .05s both; }
+.cards-grid .pellet-card:nth-child(2) { animation: fadeUp .4s ease .09s both; }
+.cards-grid .pellet-card:nth-child(3) { animation: fadeUp .4s ease .13s both; }
+.cards-grid .pellet-card:nth-child(4) { animation: fadeUp .4s ease .17s both; }
+.cards-grid .pellet-card:nth-child(5) { animation: fadeUp .4s ease .21s both; }
+.cards-grid .pellet-card:nth-child(6) { animation: fadeUp .4s ease .25s both; }
+.cards-grid .pellet-card:nth-child(7) { animation: fadeUp .4s ease .29s both; }
+.cards-grid .pellet-card:nth-child(8) { animation: fadeUp .4s ease .33s both; }
+.cards-grid .pellet-card:nth-child(9) { animation: fadeUp .4s ease .37s both; }
+.stats-grid .stat-card:nth-child(1) { animation: fadeUp .4s ease .10s both; }
+.stats-grid .stat-card:nth-child(2) { animation: fadeUp .4s ease .17s both; }
+.stats-grid .stat-card:nth-child(3) { animation: fadeUp .4s ease .24s both; }
+.stats-grid .stat-card:nth-child(4) { animation: fadeUp .4s ease .31s both; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 900px) {
+  .sidebar { transform: translateX(-100%); }
+  .sidebar.open { transform: translateX(0); box-shadow: 4px 0 40px rgba(0,0,0,.55); }
+  .main { margin-left: 0; }
+  .hamburger { display: flex; }
+}
+@media (max-width: 600px) {
+  .page { padding: 16px 14px 32px; }
+  .hero { padding: 22px 20px; }
+  .cards-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .header { padding: 0 14px; }
+  .hdr-btn span { display: none; }
+}
+@media (max-width: 380px) {
+  .cards-grid { grid-template-columns: 1fr; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}
+```
+
   </style>
 </head>
 <body>
-  <div class="scroll-progress" id="scrollProgress"></div>
-  <div class="bg-canvas"></div>
+  <div class="scroll-bar" id="scrollBar"></div>
+  <div class="bg-canvas">
+    <div class="bg-orb bg-orb-1"></div>
+    <div class="bg-orb bg-orb-2"></div>
+    <div class="bg-orb bg-orb-3"></div>
+    <div class="bg-grid"></div>
+  </div>
 
-  <div class="app-shell">
+  <div class="app">
 
-    <!-- SIDEBAR -->
-    <nav class="sidebar" id="sidebar">
-      <div class="sidebar-logo">
-        <div class="logo-icon"><i class="fas fa-graduation-cap"></i></div>
-        <div class="logo-text"><strong>EduHub</strong><small>Learning Portal</small></div>
-      </div>
-      <div class="sidebar-section">
-        <div class="sidebar-section-label">Main</div>
-        <div class="nav-item active" onclick="closeSidebar()"><i class="fas fa-th-large"></i> Dashboard</div>
-        <a class="nav-item" href="https://daravuth995.github.io/livesessions/" onclick="closeSidebar()"><i class="fas fa-video"></i> Live Sessions</a>
-        <a class="nav-item" href="https://daravuth995.github.io/Monthly-Evaluation-Ver2/" onclick="closeSidebar()"><i class="fas fa-clipboard-check"></i> Evaluation</a>
-        <a class="nav-item" href="https://daravuth995.github.io/Attendance-/" onclick="closeSidebar()"><i class="fas fa-user-check"></i> Attendance<span class="nav-badge">New</span></a>
-        <a class="nav-item" href="https://daravuth995.github.io/Edusphere-/" onclick="closeSidebar()"><i class="fas fa-flask"></i> Practical Class</a>
-      </div>
-      <div class="sidebar-section">
-        <div class="sidebar-section-label">Extras</div>
-        <a class="nav-item" href="https://daravuth995.github.io/Rewards-Shop/" onclick="closeSidebar()"><i class="fas fa-gift"></i> Rewards Shop</a>
-        <a class="nav-item" href="https://daravuth995.github.io/Ai-Support/" onclick="closeSidebar()"><i class="fas fa-robot"></i> AI Assistant</a>
-        <a class="nav-item" href="https://daravuth995.github.io/Games-Dashboard-/" onclick="closeSidebar()"><i class="fas fa-dice"></i> Play &amp; Earn</a>
-        <a class="nav-item" href="https://daravuth995.github.io/Dictionary-/" onclick="closeSidebar()"><i class="fas fa-book"></i> Dictionary</a>
-      </div>
-      <div class="sidebar-footer">
-        <div class="instructor-chip">
-          <div class="instructor-avatar">DY</div>
-          <div class="instructor-info">
-            <strong id="sidebarInstructor">Daravuth Yon</strong>
-            <small>Instructor</small>
-          </div>
-        </div>
-      </div>
-    </nav>
-    <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
-
-    <!-- MAIN -->
-    <div class="main-content">
-      <header class="topbar">
-        <button class="hamburger" id="hamburger" onclick="toggleSidebar()" aria-label="Menu"><i class="fas fa-bars"></i></button>
-        <span class="topbar-title">Dashboard</span>
-        <div class="topbar-actions">
-          <a href="https://daravuth995.github.io/Dictionary-/" class="dict-btn"><i class="fas fa-book"></i> Dictionary</a>
-          <a href="https://t.me/alita995" target="_blank" rel="noopener" class="icon-btn" title="Telegram"><i class="fab fa-telegram"></i></a>
-        </div>
-      </header>
-
-      <div class="page-content">
-
-        <!-- HERO -->
-        <div class="hero-banner">
-          <div class="hero-eyebrow">Academic Learning Portal</div>
-          <div class="hero-title" id="pageTitle">Welcome to Our Classroom</div>
-          <div class="hero-khmer" id="khmerWelcome">ស្វាគមន៍មកកាន់ថ្នាក់រៀន</div>
-          <div class="hero-subtitle">
-            <span id="pageSubtitle">Interactive Learning Portal</span>
-            &nbsp;·&nbsp; Instructor: <strong id="instructorName">Daravuth Yon</strong>
-          </div>
-        </div>
-
-        <!-- ANNOUNCEMENT -->
-        <div class="announcement-card" id="announcementBox">
-          <div class="ann-header">
-            <div class="ann-icon"><i class="fas fa-bullhorn" id="annIcon"></i></div>
-            <div class="ann-title" id="annTitle">Important Announcement</div>
-            <div class="fetch-status loading" id="fetchStatus">
-              <span class="dot"></span><span id="fetchStatusText">Loading…</span>
-            </div>
-            <button class="ann-retry" id="annRetry" onclick="retryFetch()">
-              <i class="fas fa-rotate-right"></i> Retry
-            </button>
-          </div>
-          <div class="ann-messages" id="annMessages">
-            <div class="ann-skeleton" style="width:90%"></div>
-            <div class="ann-skeleton" style="width:70%"></div>
-          </div>
-        </div>
-
-        <!-- QUICK ACCESS -->
-        <div class="section-label">Quick Access</div>
-        <div class="quick-grid">
-          <a href="https://daravuth995.github.io/Rewards-Shop/" class="action-card card-rewards">
-            <div class="action-card-icon"><i class="fas fa-gift"></i></div>
-            <div class="action-card-label">Rewards Shop</div>
-            <div class="action-card-sub">Redeem your points</div>
-          </a>
-          <a href="https://daravuth995.github.io/Ai-Support/" class="action-card card-ai">
-            <div class="ai-pulse-ring"></div>
-            <div class="action-card-icon"><i class="fas fa-robot"></i></div>
-            <div class="action-card-label">AI Assistant</div>
-            <div class="action-card-sub">Instant study help</div>
-          </a>
-          <a href="https://daravuth995.github.io/livesessions/" class="action-card card-blue">
-            <div class="action-card-icon"><i class="fas fa-video"></i></div>
-            <div class="action-card-label">Live Sessions</div>
-            <div class="action-card-sub">Join interactive classes</div>
-            <div class="action-card-khmer">ចូលរៀនផ្ទាល់</div>
-          </a>
-          <a href="https://daravuth995.github.io/Monthly-Evaluation-Ver2/" class="action-card card-emerald">
-            <div class="action-card-icon"><i class="fas fa-clipboard-check"></i></div>
-            <div class="action-card-label">Student Portal</div>
-            <div class="action-card-sub">Evaluation &amp; progress</div>
-            <div class="action-card-khmer">តាមដានដំណើរការ</div>
-          </a>
-          <a href="https://daravuth995.github.io/Attendance-/" class="action-card card-amber">
-            <div class="action-card-icon"><i class="fas fa-user-check"></i></div>
-            <div class="action-card-label">Attendance</div>
-            <div class="action-card-sub">Track your record</div>
-            <div class="action-card-khmer">តាមដានវត្តមាន</div>
-          </a>
-          <a href="https://daravuth995.github.io/Edusphere-/" class="action-card card-violet">
-            <div class="action-card-icon"><i class="fas fa-flask"></i></div>
-            <div class="action-card-label">Practical Class</div>
-            <div class="action-card-sub">Lab materials &amp; exercises</div>
-            <div class="action-card-khmer">មេរៀន &amp; លំហាត់</div>
-          </a>
-          <button onclick="window.location.href='https://daravuth995.github.io/Games-Dashboard-/'" class="action-card card-rose">
-            <div class="action-card-icon"><i class="fas fa-dice"></i></div>
-            <div class="action-card-label">Play &amp; Earn</div>
-            <div class="action-card-sub">Games &amp; random selection</div>
-            <div class="action-card-khmer">ការកម្សាន្ត &amp; ជ្រើសរើស</div>
-          </button>
-          <a href="https://daravuth995.github.io/Dictionary-/" class="action-card card-teal">
-            <div class="action-card-icon"><i class="fas fa-book-open"></i></div>
-            <div class="action-card-label">Dictionary</div>
-            <div class="action-card-sub">Look up words instantly</div>
-          </a>
-        </div>
-
-        <!-- YOUR PROGRESS — wired to backend stats -->
-        <div class="section-label">Your Progress</div>
-        <div class="stats-grid">
-
-          <!-- Evaluation Score -->
-          <div class="stat-card" id="statEval"
-               style="--stat-grad:linear-gradient(135deg,rgba(37,99,235,.15),rgba(37,99,235,.03))">
-            <div class="stat-top">
-              <div class="stat-icon" style="background:var(--royal-pale);color:var(--royal-soft);">
-                <i class="fas fa-chart-line"></i>
-              </div>
-              <span class="stat-trend loading" id="trendEval">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
-            </div>
-            <div class="stat-value loading" id="valEval">&nbsp;</div>
-            <div class="stat-label" id="lblEval">Evaluation Score</div>
-          </div>
-
-          <!-- Total Points -->
-          <div class="stat-card" id="statPoints"
-               style="--stat-grad:linear-gradient(135deg,rgba(217,119,6,.15),rgba(217,119,6,.03))">
-            <div class="stat-top">
-              <div class="stat-icon" style="background:var(--amber-pale);color:var(--amber);">
-                <i class="fas fa-star"></i>
-              </div>
-              <span class="stat-trend loading" id="trendPoints">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
-            </div>
-            <div class="stat-value loading" id="valPoints">&nbsp;</div>
-            <div class="stat-label" id="lblPoints">Total Points</div>
-          </div>
-
-          <!-- Attendance Rate -->
-          <div class="stat-card" id="statAtt"
-               style="--stat-grad:linear-gradient(135deg,rgba(5,150,105,.15),rgba(5,150,105,.03))">
-            <div class="stat-top">
-              <div class="stat-icon" style="background:var(--emerald-pale);color:var(--emerald);">
-                <i class="fas fa-calendar-check"></i>
-              </div>
-              <span class="stat-trend loading" id="trendAtt">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
-            </div>
-            <div class="stat-value loading" id="valAtt">&nbsp;</div>
-            <div class="stat-label" id="lblAtt">Attendance Rate</div>
-          </div>
-
-          <!-- Leaderboard Rank -->
-          <div class="stat-card" id="statRank"
-               style="--stat-grad:linear-gradient(135deg,rgba(124,58,237,.15),rgba(124,58,237,.03))">
-            <div class="stat-top">
-              <div class="stat-icon" style="background:var(--violet-pale);color:var(--violet-soft);">
-                <i class="fas fa-trophy"></i>
-              </div>
-              <span class="stat-trend loading" id="trendRank">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
-            </div>
-            <div class="stat-value loading" id="valRank">&nbsp;</div>
-            <div class="stat-label" id="lblRank">Leaderboard Rank</div>
-          </div>
-
-        </div><!-- /stats-grid -->
-
-      </div><!-- /page-content -->
-
-      <footer class="page-footer">
-        © 2025 EduHub Student Portal &nbsp;·&nbsp; Designed with <i class="fas fa-heart"></i> for Learning Excellence
-      </footer>
+```
+<!-- SIDEBAR -->
+<nav class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-pill"><i class="fas fa-graduation-cap"></i></div>
+    <div>
+      <div class="logo-name">EduHub</div>
+      <div class="logo-sub">Learning Portal</div>
     </div>
   </div>
 
-  <!-- Telegram FAB -->
-  <a href="https://t.me/alita995" class="fab-telegram" target="_blank" rel="noopener" id="fabTelegram">
+  <div class="sidebar-section">
+    <div class="sidebar-label">Main</div>
+    <div class="nav-item active" onclick="closeSidebar()"><i class="fas fa-th-large"></i> Dashboard</div>
+    <a class="nav-item" href="https://daravuth995.github.io/livesessions/" onclick="closeSidebar()"><i class="fas fa-video"></i> Live Sessions</a>
+    <a class="nav-item" href="https://daravuth995.github.io/Monthly-Evaluation-Ver2/" onclick="closeSidebar()"><i class="fas fa-clipboard-check"></i> Evaluation</a>
+    <a class="nav-item" href="https://daravuth995.github.io/Attendance-/" onclick="closeSidebar()"><i class="fas fa-user-check"></i> Attendance <span class="nav-badge">New</span></a>
+    <a class="nav-item" href="https://daravuth995.github.io/Edusphere-/" onclick="closeSidebar()"><i class="fas fa-flask"></i> Practical Class</a>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-label">Extras</div>
+    <a class="nav-item" href="https://daravuth995.github.io/Rewards-Shop/" onclick="closeSidebar()"><i class="fas fa-gift"></i> Rewards Shop</a>
+    <a class="nav-item" href="https://daravuth995.github.io/Ai-Support/" onclick="closeSidebar()"><i class="fas fa-robot"></i> AI Assistant</a>
+    <a class="nav-item" href="https://daravuth995.github.io/Games-Dashboard-/" onclick="closeSidebar()"><i class="fas fa-dice"></i> Play &amp; Earn</a>
+    <a class="nav-item" href="https://daravuth995.github.io/Dictionary-/" onclick="closeSidebar()"><i class="fas fa-book"></i> Dictionary</a>
+    <a class="nav-item" href="https://test.daravuthenglish.online" onclick="closeSidebar()"><i class="fas fa-vials"></i> System Test</a>
+  </div>
+
+  <div class="sidebar-footer">
+    <div class="profile-chip">
+      <div class="profile-avatar">DY</div>
+      <div>
+        <div class="profile-name" id="sidebarInstructor">Daravuth Yon</div>
+        <div class="profile-role">Instructor</div>
+      </div>
+    </div>
+  </div>
+</nav>
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+<!-- MAIN CONTENT -->
+<div class="main">
+
+  <!-- HEADER -->
+  <header class="header">
+    <button class="hamburger" id="hamburger" onclick="toggleSidebar()" aria-label="Menu">
+      <i class="fas fa-bars"></i>
+    </button>
+    <span class="header-title">Dashboard</span>
+    <div class="header-actions">
+      <a href="https://test.daravuthenglish.online" class="hdr-btn hdr-btn-ghost" target="_blank">
+        <i class="fas fa-vials"></i> <span>System Test</span>
+      </a>
+      <a href="https://daravuth995.github.io/Dictionary-/" class="hdr-btn hdr-btn-blue">
+        <i class="fas fa-book"></i> <span>Dictionary</span>
+      </a>
+      <a href="https://t.me/alita995" target="_blank" rel="noopener" class="hdr-icon">
+        <i class="fab fa-telegram"></i>
+      </a>
+    </div>
+  </header>
+
+  <!-- PAGE -->
+  <div class="page">
+
+    <!-- HERO -->
+    <div class="hero">
+      <div class="hero-eyebrow">Academic Learning Portal</div>
+      <div class="hero-title" id="pageTitle">Welcome to Our Classroom</div>
+      <div class="hero-khmer" id="khmerWelcome">ស្វាគមន៍មកកាន់ថ្នាក់រៀន</div>
+      <div class="hero-sub">
+        <span id="pageSubtitle">Interactive Learning Portal</span>
+        &nbsp;·&nbsp; Instructor: <strong id="instructorName">Daravuth Yon</strong>
+      </div>
+    </div>
+
+    <!-- ANNOUNCEMENT -->
+    <div class="ann-card" id="annCard">
+      <div class="ann-header">
+        <div class="ann-icon-wrap"><i class="fas fa-bullhorn"></i></div>
+        <div class="ann-title-text" id="annTitle">Important Announcement</div>
+        <div style="margin-left:auto;display:flex;align-items:center;gap:8px;">
+          <div class="status-pill loading" id="fetchStatus">
+            <span class="dot"></span><span id="fetchStatusText">Loading…</span>
+          </div>
+          <button class="ann-retry-btn" id="annRetry" onclick="retryFetch()">
+            <i class="fas fa-rotate-right"></i> Retry
+          </button>
+        </div>
+      </div>
+      <div class="ann-body">
+        <div class="ann-skeleton" style="width:88%"></div>
+        <div class="ann-skeleton" style="width:66%"></div>
+      </div>
+    </div>
+
+    <!-- QUICK ACCESS -->
+    <div class="section-hdr">
+      <div class="section-hdr-label">Quick Access</div>
+      <div class="section-hdr-line"></div>
+    </div>
+    <div class="cards-grid">
+
+      <a href="https://daravuth995.github.io/Rewards-Shop/" class="pellet-card c-rewards">
+        <div class="card-icon"><i class="fas fa-gift"></i></div>
+        <div class="card-name">Rewards Shop</div>
+        <div class="card-desc">Redeem your points</div>
+      </a>
+
+      <a href="https://daravuth995.github.io/Ai-Support/" class="pellet-card c-ai">
+        <div class="card-ring"></div>
+        <div class="card-icon"><i class="fas fa-robot"></i></div>
+        <div class="card-name">AI Assistant</div>
+        <div class="card-desc">Instant study help</div>
+      </a>
+
+      <a href="https://test.daravuthenglish.online" class="pellet-card c-syscheck" target="_blank">
+        <div class="card-icon"><i class="fas fa-vials"></i></div>
+        <div class="card-name">System Test</div>
+        <div class="card-desc">Run a system check</div>
+      </a>
+
+      <a href="https://daravuth995.github.io/livesessions/" class="pellet-card c-blue">
+        <div class="card-icon"><i class="fas fa-video"></i></div>
+        <div class="card-name">Live Sessions</div>
+        <div class="card-desc">Join interactive classes</div>
+        <div class="card-khmer">ចូលរៀនផ្ទាល់</div>
+      </a>
+
+      <a href="https://daravuth995.github.io/Monthly-Evaluation-Ver2/" class="pellet-card c-emerald">
+        <div class="card-icon"><i class="fas fa-clipboard-check"></i></div>
+        <div class="card-name">Student Portal</div>
+        <div class="card-desc">Evaluation &amp; progress</div>
+        <div class="card-khmer">តាមដានដំណើរការ</div>
+      </a>
+
+      <a href="https://daravuth995.github.io/Attendance-/" class="pellet-card c-amber">
+        <div class="card-icon"><i class="fas fa-user-check"></i></div>
+        <div class="card-name">Attendance</div>
+        <div class="card-desc">Track your record</div>
+        <div class="card-khmer">តាមដានវត្តមាន</div>
+      </a>
+
+      <a href="https://daravuth995.github.io/Edusphere-/" class="pellet-card c-violet">
+        <div class="card-icon"><i class="fas fa-flask"></i></div>
+        <div class="card-name">Practical Class</div>
+        <div class="card-desc">Lab materials &amp; exercises</div>
+        <div class="card-khmer">មេរៀន &amp; លំហាត់</div>
+      </a>
+
+      <a href="https://daravuth995.github.io/Games-Dashboard-/" class="pellet-card c-rose">
+        <div class="card-icon"><i class="fas fa-dice"></i></div>
+        <div class="card-name">Play &amp; Earn</div>
+        <div class="card-desc">Games &amp; random picks</div>
+        <div class="card-khmer">ការកម្សាន្ត</div>
+      </a>
+
+      <a href="https://daravuth995.github.io/Dictionary-/" class="pellet-card c-teal">
+        <div class="card-icon"><i class="fas fa-book-open"></i></div>
+        <div class="card-name">Dictionary</div>
+        <div class="card-desc">Look up words instantly</div>
+      </a>
+
+    </div>
+
+    <!-- PROGRESS STATS -->
+    <div class="section-hdr">
+      <div class="section-hdr-label">Your Progress</div>
+      <div class="section-hdr-line"></div>
+    </div>
+    <div class="stats-grid">
+
+      <div class="stat-card" style="--stat-shine:linear-gradient(135deg,rgba(59,126,248,.12),rgba(59,126,248,.02))">
+        <div class="stat-top">
+          <div class="stat-icon" style="background:rgba(59,126,248,.12);color:#7ab3fd">
+            <i class="fas fa-chart-line"></i>
+          </div>
+          <span class="stat-badge badge-loading" id="trendEval">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+        </div>
+        <div class="stat-value loading" id="valEval">&nbsp;</div>
+        <div class="stat-lbl" id="lblEval">Evaluation Score</div>
+      </div>
+
+      <div class="stat-card" style="--stat-shine:linear-gradient(135deg,rgba(245,158,11,.12),rgba(245,158,11,.02))">
+        <div class="stat-top">
+          <div class="stat-icon" style="background:rgba(245,158,11,.12);color:#fcd34d">
+            <i class="fas fa-star"></i>
+          </div>
+          <span class="stat-badge badge-loading" id="trendPoints">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+        </div>
+        <div class="stat-value loading" id="valPoints">&nbsp;</div>
+        <div class="stat-lbl" id="lblPoints">Total Points</div>
+      </div>
+
+      <div class="stat-card" style="--stat-shine:linear-gradient(135deg,rgba(16,185,129,.12),rgba(16,185,129,.02))">
+        <div class="stat-top">
+          <div class="stat-icon" style="background:rgba(16,185,129,.12);color:#34d399">
+            <i class="fas fa-calendar-check"></i>
+          </div>
+          <span class="stat-badge badge-loading" id="trendAtt">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+        </div>
+        <div class="stat-value loading" id="valAtt">&nbsp;</div>
+        <div class="stat-lbl" id="lblAtt">Attendance Rate</div>
+      </div>
+
+      <div class="stat-card" style="--stat-shine:linear-gradient(135deg,rgba(139,92,246,.12),rgba(139,92,246,.02))">
+        <div class="stat-top">
+          <div class="stat-icon" style="background:rgba(139,92,246,.12);color:#a78bfa">
+            <i class="fas fa-trophy"></i>
+          </div>
+          <span class="stat-badge badge-loading" id="trendRank">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+        </div>
+        <div class="stat-value loading" id="valRank">&nbsp;</div>
+        <div class="stat-lbl" id="lblRank">Leaderboard Rank</div>
+      </div>
+
+    </div>
+  </div><!-- /page -->
+
+  <footer class="footer">
+    © 2025 EduHub Student Portal &nbsp;·&nbsp; Designed with <i class="fas fa-heart"></i>&nbsp; for Learning Excellence
+  </footer>
+</div><!-- /main -->
+```
+
+  </div><!-- /app -->
+
+  <!-- FAB -->
+
+  <a href="https://t.me/alita995" class="fab" id="fabTelegram" target="_blank" rel="noopener">
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-      <path d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.446 1.394c-.14.18-.357.295-.6.295-.002 0-.003 0-.005 0l.213-3.054 5.56-5.022c.24-.213-.054-.334-.373-.121l-6.869 4.326-2.96-.924c-.64-.203-.658-.64.135-.954l11.566-4.458c.538-.196 1.006.128.832.941z"/>
+      <path d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.446 1.394c-.14.18-.357.295-.6.295l.213-3.054 5.56-5.022c.24-.213-.054-.334-.373-.121l-6.869 4.326-2.96-.924c-.64-.203-.658-.64.135-.954l11.566-4.458c.538-.196 1.006.128.832.941z"/>
     </svg>
   </a>
 
-  <!-- Telegram Popup -->
-  <div class="telegram-popup" id="tgPopup">
-    <div class="tg-popup-header">
+  <!-- TG POPUP -->
+
+  <div class="tg-popup" id="tgPopup">
+    <div class="tg-header">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-        <path d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.446 1.394c-.14.18-.357.295-.6.295-.002 0-.003 0-.005 0l.213-3.054 5.56-5.022c.24-.213-.054-.334-.373-.121l-6.869 4.326-2.96-.924c-.64-.203-.658-.64.135-.954l11.566-4.458c.538-.196 1.006.128.832.941z"/>
+        <path d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.446 1.394c-.14.18-.357.295-.6.295l.213-3.054 5.56-5.022c.24-.213-.054-.334-.373-.121l-6.869 4.326-2.96-.924c-.64-.203-.658-.64.135-.954l11.566-4.458c.538-.196 1.006.128.832.941z"/>
       </svg>
       Telegram Support
-      <div class="tg-popup-close" id="tgClose"><i class="fas fa-times"></i></div>
+      <div class="tg-close" id="tgClose"><i class="fas fa-times"></i></div>
     </div>
-    <div class="tg-popup-body">Need help with your studies? Contact me for any questions about course materials or assignments. I'm here to support your learning journey!</div>
-    <div class="tg-popup-footer">
-      <a href="https://t.me/alita995" target="_blank" rel="noopener" class="tg-btn">
+    <div class="tg-body">Need help with your studies? Message me for questions about course materials or assignments — I'm here for your learning journey!</div>
+    <div class="tg-foot">
+      <a href="https://t.me/alita995" target="_blank" rel="noopener" class="tg-cta">
         <i class="fab fa-telegram"></i> &nbsp;Message Instructor
       </a>
     </div>
   </div>
 
   <script>
-  // ══════════════════════════════════════════════════════════════
+  // ═══════════════════════════════════════════
   //  CONFIG
-  // ══════════════════════════════════════════════════════════════
+  // ═══════════════════════════════════════════
   const BACKEND_URL = 'https://script.google.com/macros/s/AKfycby7Ca0rv5uZAalC7l0jyeQM2JQ2iX34LwW_CKB41cYiu2n4jZ9A6aK-SdGfaPkmYUmmoA/exec';
-  const CACHE_KEY   = 'eduhub_config_cache';
+  const CACHE_KEY   = 'eduhub_config_v2';
   const CACHE_TTL   = 5 * 60 * 1000;
 
   const defaultConfig = {
@@ -593,8 +808,7 @@
     enableTypewriter: true,
     typewriterSpeed: 28,
     initialDelay: 0.4,
-    betweenMessagesDelay: 0.25,
-    // Default stats shown when backend has no stats object yet
+    betweenMessagesDelay: 0.3,
     stats: {
       evaluation:  { value: null, trend: 'neutral', label: 'Evaluation Score' },
       points:      { value: null, trend: 'up',      label: 'Total Points' },
@@ -603,179 +817,127 @@
     }
   };
 
-  const $ = id => document.getElementById(id);
+  const $id = id => document.getElementById(id);
 
-  // ── Scroll progress ───────────────────────────────────────────
+  // ── Scroll progress ──
   window.addEventListener('scroll', () => {
-    const sTop = document.documentElement.scrollTop || document.body.scrollTop;
-    const sH   = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-    $('scrollProgress').style.width = sH > 0 ? `${(sTop/sH)*100}%` : '0%';
+    const sTop = document.documentElement.scrollTop;
+    const sH = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+    $id('scrollBar').style.width = sH > 0 ? `${(sTop/sH)*100}%` : '0%';
   }, { passive: true });
 
-  // ── Sidebar ───────────────────────────────────────────────────
+  // ── Sidebar ──
   function toggleSidebar() {
-    $('sidebar').classList.toggle('open');
-    $('sidebarOverlay').classList.toggle('show');
+    $id('sidebar').classList.toggle('open');
+    $id('sidebarOverlay').classList.toggle('show');
   }
   function closeSidebar() {
-    $('sidebar').classList.remove('open');
-    $('sidebarOverlay').classList.remove('show');
+    $id('sidebar').classList.remove('open');
+    $id('sidebarOverlay').classList.remove('show');
   }
 
-  // ── Telegram popup ────────────────────────────────────────────
-  const tgPopup = $('tgPopup');
-  $('tgClose').addEventListener('click', () => tgPopup.classList.remove('show'));
+  // ── TG Popup ──
+  const tgPopup = $id('tgPopup');
+  $id('tgClose').addEventListener('click', () => tgPopup.classList.remove('show'));
   document.addEventListener('click', e => {
-    if (!tgPopup.contains(e.target) && !$('fabTelegram').contains(e.target))
+    if (!tgPopup.contains(e.target) && !$id('fabTelegram').contains(e.target))
       tgPopup.classList.remove('show');
   });
   setTimeout(() => {
     tgPopup.classList.add('show');
-    setTimeout(() => tgPopup.classList.remove('show'), 12000);
+    setTimeout(() => tgPopup.classList.remove('show'), 10000);
   }, 4000);
 
-  // ══════════════════════════════════════════════════════════════
-  //  STAT CARD RENDERER
-  //  trend icons: up ↑ / down ↓ / neutral ●
-  //  Animates value from 0 → final (count-up for numbers)
-  // ══════════════════════════════════════════════════════════════
+  // ── Stat helpers ──
   const TREND_META = {
-    up:      { cls: 'up',      icon: 'fa-arrow-up',    label: 'Rising'   },
-    down:    { cls: 'down',    icon: 'fa-arrow-down',  label: 'Dropping' },
-    neutral: { cls: 'neutral', icon: 'fa-minus',       label: 'Stable'   }
+    up:      { cls: 'badge-up',      icon: 'fa-arrow-up',   label: 'Rising'  },
+    down:    { cls: 'badge-down',    icon: 'fa-arrow-down', label: 'Dropping'},
+    neutral: { cls: 'badge-neutral', icon: 'fa-minus',      label: 'Stable'  }
   };
 
-  // Parse a display value into a number for count-up (returns null if not numeric)
-  function parseStatNumber(val) {
-    if (val === null || val === undefined) return null;
-    const s = String(val).replace(/[^0-9.]/g, '');
-    const n = parseFloat(s);
+  function parseNum(v) {
+    if (v === null || v === undefined) return null;
+    const n = parseFloat(String(v).replace(/[^0-9.]/g,''));
     return isNaN(n) ? null : n;
   }
+  function getSuffix(v) { const m = String(v).match(/[^0-9.]+$/); return m ? m[0] : ''; }
+  function getPrefix(v) { const m = String(v).match(/^[^0-9.]*/); return m ? m[0] : ''; }
 
-  // Extract suffix like '%', '#', 'pts' etc.
-  function getStatSuffix(val) {
-    if (!val) return '';
-    const m = String(val).match(/[^0-9.]+$/);
-    return m ? m[0] : '';
-  }
-  function getStatPrefix(val) {
-    if (!val) return '';
-    const m = String(val).match(/^[^0-9.]*/);
-    return m ? m[0] : '';
-  }
-
-  // Animate count-up
-  function countUp(el, finalVal, prefix, suffix, duration = 900) {
+  function countUp(el, final, prefix, suffix, dur = 800) {
     const start = performance.now();
-    const from  = 0;
-    const isInt = Number.isInteger(finalVal);
-
-    function step(now) {
-      const elapsed  = now - start;
-      const progress = Math.min(elapsed / duration, 1);
-      // Ease out expo
-      const eased    = 1 - Math.pow(2, -10 * progress);
-      const current  = from + (finalVal - from) * eased;
-      el.textContent = prefix + (isInt ? Math.round(current) : current.toFixed(1)) + suffix;
-      if (progress < 1) requestAnimationFrame(step);
-      else el.textContent = prefix + (isInt ? finalVal : finalVal.toFixed(1)) + suffix;
-    }
-    requestAnimationFrame(step);
+    const isInt = Number.isInteger(final);
+    (function step(now) {
+      const p = Math.min((now-start)/dur, 1);
+      const e = 1 - Math.pow(2, -10*p);
+      const v = final * e;
+      el.textContent = prefix + (isInt ? Math.round(v) : v.toFixed(1)) + suffix;
+      if (p < 1) requestAnimationFrame(step);
+      else el.textContent = prefix + (isInt ? final : final.toFixed(1)) + suffix;
+    })(start);
   }
 
-  function renderStat(idSuffix, statObj, delay = 0) {
-    const valEl   = $(idSuffix === 'Eval' ? 'valEval' : idSuffix === 'Points' ? 'valPoints' : idSuffix === 'Att' ? 'valAtt' : 'valRank');
-    const trendEl = $(idSuffix === 'Eval' ? 'trendEval' : idSuffix === 'Points' ? 'trendPoints' : idSuffix === 'Att' ? 'trendAtt' : 'trendRank');
-    const lblEl   = $(idSuffix === 'Eval' ? 'lblEval' : idSuffix === 'Points' ? 'lblPoints' : idSuffix === 'Att' ? 'lblAtt' : 'lblRank');
-
-    const trend   = TREND_META[statObj.trend] || TREND_META.neutral;
-    const display = statObj.value;           // null → show "—"
-    const label   = statObj.label || '';
-
-    // Update label
-    if (lblEl) lblEl.textContent = label;
-
-    // Trend badge
+  function renderStat(valId, trendId, lblId, statObj, delay) {
+    const valEl = $id(valId), trendEl = $id(trendId), lblEl = $id(lblId);
+    if (!valEl) return;
+    const trend = TREND_META[statObj.trend] || TREND_META.neutral;
+    if (lblEl) lblEl.textContent = statObj.label || '';
     if (trendEl) {
-      trendEl.className    = `stat-trend ${trend.cls}`;
-      trendEl.innerHTML    = `<i class="fas ${trend.icon}"></i> ${trend.label}`;
+      trendEl.className = `stat-badge ${trend.cls}`;
+      trendEl.innerHTML = `<i class="fas ${trend.icon}"></i> ${trend.label}`;
     }
-
-    // Value — count-up after delay
-    if (valEl) {
-      valEl.className = 'stat-value'; // remove loading shimmer
-
-      if (display === null || display === undefined || display === '') {
-        // No data yet — show dash
-        valEl.textContent = '—';
-      } else {
-        const num    = parseStatNumber(display);
-        const prefix = getStatPrefix(display);
-        const suffix = getStatSuffix(display);
-        if (num !== null) {
-          valEl.textContent = prefix + '0' + suffix;
-          setTimeout(() => countUp(valEl, num, prefix, suffix), delay * 1000 + 200);
-        } else {
-          // Non-numeric (e.g. "A+", "Top 5")
-          setTimeout(() => { valEl.textContent = display; }, delay * 1000 + 200);
-        }
-      }
+    valEl.className = 'stat-value';
+    const d = statObj.value;
+    if (!d) { valEl.textContent = '—'; return; }
+    const n = parseNum(d);
+    if (n !== null) {
+      const px = getPrefix(d), sx = getSuffix(d);
+      valEl.textContent = px + '0' + sx;
+      setTimeout(() => countUp(valEl, n, px, sx), delay * 1000 + 150);
+    } else {
+      setTimeout(() => { valEl.textContent = d; }, delay * 1000 + 150);
     }
   }
 
-  // ══════════════════════════════════════════════════════════════
-  //  APPLY FULL CONFIG TO PAGE
-  // ══════════════════════════════════════════════════════════════
+  // ── Apply config ──
   function applyConfig(cfg, source) {
-    // ── Hero ──────────────────────────────────────────────────
-    $('pageTitle').textContent       = cfg.title          || defaultConfig.title;
-    $('khmerWelcome').textContent    = cfg.khmerWelcome   || defaultConfig.khmerWelcome;
-    $('pageSubtitle').textContent    = cfg.subtitle       || defaultConfig.subtitle;
-    $('instructorName').textContent  = cfg.instructorName || defaultConfig.instructorName;
-    $('sidebarInstructor').textContent = cfg.instructorName || defaultConfig.instructorName;
+    $id('pageTitle').textContent       = cfg.title          || defaultConfig.title;
+    $id('khmerWelcome').textContent    = cfg.khmerWelcome   || defaultConfig.khmerWelcome;
+    $id('pageSubtitle').textContent    = cfg.subtitle       || defaultConfig.subtitle;
+    $id('instructorName').textContent  = cfg.instructorName || defaultConfig.instructorName;
+    $id('sidebarInstructor').textContent = cfg.instructorName || defaultConfig.instructorName;
+    $id('annTitle').textContent = cfg.announcementTitle || defaultConfig.announcementTitle;
 
-    // ── Announcement ─────────────────────────────────────────
-    $('annTitle').textContent = cfg.announcementTitle || defaultConfig.announcementTitle;
-
-    const statusMap = { live:'success', cache:'cached', default:'error' };
-    const labelMap  = { live:'Live',    cache:'Cached', default:'Offline' };
-    setStatus(statusMap[source] || 'cached', labelMap[source] || source);
+    const sm = { live:'success', cache:'cached', default:'error' };
+    const lm = { live:'Live',    cache:'Cached', default:'Offline'};
+    setStatus(sm[source] || 'cached', lm[source] || source);
     showRetry(source === 'default');
 
-    const container = $('annMessages');
-    container.innerHTML = '';
-    const msgs    = (cfg.announcementMessages && cfg.announcementMessages.length)
-                    ? cfg.announcementMessages : defaultConfig.announcementMessages;
-    const speed   = cfg.typewriterSpeed      ?? defaultConfig.typewriterSpeed;
-    const initD   = cfg.initialDelay         ?? defaultConfig.initialDelay;
-    const betweenD= cfg.betweenMessagesDelay ?? defaultConfig.betweenMessagesDelay;
-    const tw      = cfg.enableTypewriter     ?? defaultConfig.enableTypewriter;
+    const body = $id('annCard').querySelector('.ann-body');
+    body.innerHTML = '';
+    const msgs   = (cfg.announcementMessages?.length) ? cfg.announcementMessages : defaultConfig.announcementMessages;
+    const speed  = cfg.typewriterSpeed      ?? defaultConfig.typewriterSpeed;
+    const initD  = cfg.initialDelay         ?? defaultConfig.initialDelay;
+    const betD   = cfg.betweenMessagesDelay ?? defaultConfig.betweenMessagesDelay;
+    const tw     = cfg.enableTypewriter     ?? defaultConfig.enableTypewriter;
 
     msgs.forEach((msg, idx) => {
       const p = document.createElement('p');
-      const delayMs = (initD + idx * betweenD) * 1000;
-      p.style.animationDelay = `${initD + idx * betweenD}s`;
-      container.appendChild(p);
+      p.className = 'ann-msg';
+      const delayMs = (initD + idx * betD) * 1000;
+      p.style.animationDelay = `${initD + idx * betD}s`;
+      body.appendChild(p);
       if (tw) {
         const text = (msg || '').trim();
         setTimeout(() => {
           let i = 0; p.textContent = '';
-          (function type() {
-            if (i < text.length) { p.textContent += text.charAt(i++); setTimeout(type, speed); }
-          })();
+          (function type() { if (i < text.length) { p.textContent += text[i++]; setTimeout(type, speed); } })();
         }, delayMs);
       } else {
-        p.innerHTML = (msg || '').trim();
+        p.textContent = (msg || '').trim();
       }
     });
 
-    // ── Progress Stats ────────────────────────────────────────
-    // Merge backend stats with defaults (so missing fields don't break)
     const stats = Object.assign({}, defaultConfig.stats, cfg.stats || {});
-
-    // If backend returned flat keys instead of nested stats object,
-    // try to read them as fallback
     if (!cfg.stats) {
       if (cfg.evaluationScore  !== undefined) stats.evaluation.value  = String(cfg.evaluationScore);
       if (cfg.evaluationTrend  !== undefined) stats.evaluation.trend  = cfg.evaluationTrend;
@@ -787,118 +949,90 @@
       if (cfg.leaderboardTrend !== undefined) stats.leaderboard.trend = cfg.leaderboardTrend;
     }
 
-    renderStat('Eval',   stats.evaluation,  0.0);
-    renderStat('Points', stats.points,      0.1);
-    renderStat('Att',    stats.attendance,  0.2);
-    renderStat('Rank',   stats.leaderboard, 0.3);
+    renderStat('valEval',   'trendEval',   'lblEval',   stats.evaluation,  0.0);
+    renderStat('valPoints', 'trendPoints', 'lblPoints', stats.points,      0.1);
+    renderStat('valAtt',    'trendAtt',    'lblAtt',    stats.attendance,  0.2);
+    renderStat('valRank',   'trendRank',   'lblRank',   stats.leaderboard, 0.3);
   }
 
-  // ── Status badge helpers ──────────────────────────────────────
   function setStatus(state, text) {
-    const el = $('fetchStatus');
-    el.className = `fetch-status ${state}`;
-    $('fetchStatusText').textContent = text;
+    const el = $id('fetchStatus');
+    el.className = `status-pill ${state}`;
+    $id('fetchStatusText').textContent = text;
   }
-  function showRetry(show) {
-    $('annRetry').classList.toggle('visible', show);
-  }
+  function showRetry(show) { $id('annRetry').classList.toggle('show', show); }
 
-  // ── Cache helpers ─────────────────────────────────────────────
-  function saveCache(data) {
-    try { localStorage.setItem(CACHE_KEY, JSON.stringify({ ts: Date.now(), data })); } catch(e) {}
-  }
+  // ── Cache ──
+  function saveCache(data) { try { localStorage.setItem(CACHE_KEY, JSON.stringify({ts:Date.now(),data})); } catch(e){} }
   function loadCache() {
     try {
       const raw = localStorage.getItem(CACHE_KEY);
       if (!raw) return null;
-      const { ts, data } = JSON.parse(raw);
+      const {ts, data} = JSON.parse(raw);
       if (Date.now() - ts < CACHE_TTL) return data;
-    } catch(e) {}
+    } catch(e){}
     return null;
   }
 
-  // ── JSONP fallback ────────────────────────────────────────────
-  function fetchViaJSONP(url) {
-    return new Promise((resolve, reject) => {
-      const cbName = '__eduhub_cb_' + Date.now();
-      const script = document.createElement('script');
-      const timer  = setTimeout(() => { cleanup(); reject(new Error('JSONP timeout')); }, 8000);
-      window[cbName] = data => { cleanup(); resolve(data); };
-      function cleanup() {
-        clearTimeout(timer); delete window[cbName];
-        if (script.parentNode) script.parentNode.removeChild(script);
-      }
-      script.onerror = () => { cleanup(); reject(new Error('JSONP error')); };
-      script.src = `${url}${url.includes('?') ? '&' : '?'}callback=${cbName}`;
-      document.head.appendChild(script);
+  // ── JSONP ──
+  function fetchJSONP(url) {
+    return new Promise((res, rej) => {
+      const cb = '__ehcb_' + Date.now();
+      const sc = document.createElement('script');
+      const tm = setTimeout(() => { cleanup(); rej(new Error('timeout')); }, 8000);
+      window[cb] = d => { cleanup(); res(d); };
+      function cleanup() { clearTimeout(tm); delete window[cb]; sc.parentNode?.removeChild(sc); }
+      sc.onerror = () => { cleanup(); rej(new Error('script error')); };
+      sc.src = `${url}${url.includes('?')?'&':'?'}callback=${cb}`;
+      document.head.appendChild(sc);
     });
   }
 
-  // ── Fetch with timeout ────────────────────────────────────────
   function fetchWithTimeout(url, ms) {
     const ctrl = new AbortController();
-    const id   = setTimeout(() => ctrl.abort(), ms);
-    return fetch(url, {
-      signal: ctrl.signal, redirect: 'follow',
-      credentials: 'omit', cache: 'no-store', mode: 'cors'
-    }).finally(() => clearTimeout(id));
+    const id = setTimeout(() => ctrl.abort(), ms);
+    return fetch(url, { signal: ctrl.signal, redirect: 'follow', credentials: 'omit', cache: 'no-store', mode: 'cors' }).finally(() => clearTimeout(id));
   }
 
-  // ══════════════════════════════════════════════════════════════
-  //  MAIN UPDATE FUNCTION
-  // ══════════════════════════════════════════════════════════════
+  // ── Main update ──
   async function updatePage(isRetry = false) {
     if (isRetry) {
-      $('annMessages').innerHTML =
-        '<div class="ann-skeleton" style="width:90%"></div><div class="ann-skeleton" style="width:70%"></div>';
-      // Re-apply loading shimmer to stat values
-      ['valEval','valPoints','valAtt','valRank'].forEach(id => {
-        const el = $(id); el.className = 'stat-value loading'; el.innerHTML = '&nbsp;';
-      });
-      ['trendEval','trendPoints','trendAtt','trendRank'].forEach(id => {
-        const el = $(id); el.className = 'stat-trend loading'; el.innerHTML = '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
-      });
-      setStatus('loading', 'Retrying…');
-      showRetry(false);
+      const body = $id('annCard').querySelector('.ann-body');
+      body.innerHTML = '<div class="ann-skeleton" style="width:88%"></div><div class="ann-skeleton" style="width:65%"></div>';
+      ['valEval','valPoints','valAtt','valRank'].forEach(id => { const el=$id(id); el.className='stat-value loading'; el.innerHTML='&nbsp;'; });
+      ['trendEval','trendPoints','trendAtt','trendRank'].forEach(id => { const el=$id(id); el.className='stat-badge badge-loading'; el.innerHTML='&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'; });
+      setStatus('loading','Retrying…'); showRetry(false);
     }
 
-    // 1. Show cache instantly
     const cached = loadCache();
     if (cached && !isRetry) applyConfig(cached, 'cache');
+    if (!isRetry) setStatus('loading','Fetching…');
 
-    // 2. Live fetch
     try {
-      if (!isRetry) setStatus('loading', 'Fetching…');
       const resp = await fetchWithTimeout(BACKEND_URL, 8000);
       if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-      const text     = await resp.text();
-      const jsonText = text.replace(/^[^(]*\(/, '').replace(/\)[^)]*$/, '').trim();
-      const data     = JSON.parse(jsonText);
-      saveCache(data);
-      applyConfig(data, 'live');
-      return;
-    } catch(e) { console.warn('Direct fetch failed:', e.message, '— trying JSONP…'); }
+      const text = await resp.text();
+      const json = text.replace(/^[^(]*\(/, '').replace(/\)[^)]*$/, '').trim();
+      const data = JSON.parse(json);
+      saveCache(data); applyConfig(data, 'live'); return;
+    } catch(e) { console.warn('fetch failed:', e.message); }
 
-    // 3. JSONP fallback
     try {
-      const data = await fetchViaJSONP(BACKEND_URL);
-      saveCache(data);
-      applyConfig(data, 'live');
-      return;
+      const data = await fetchJSONP(BACKEND_URL);
+      saveCache(data); applyConfig(data, 'live'); return;
     } catch(e) { console.warn('JSONP failed:', e.message); }
 
-    // 4. Fall through to cache or defaults
     applyConfig(cached || defaultConfig, cached ? 'cache' : 'default');
   }
 
   function retryFetch() { updatePage(true); }
 
-  // ── Boot ──────────────────────────────────────────────────────
   document.addEventListener('DOMContentLoaded', () => updatePage());
   setInterval(() => updatePage(), 5 * 60 * 1000);
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'visible') updatePage();
   });
   </script>
+
 </body>
 </html>
